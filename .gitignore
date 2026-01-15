@@ -1,0 +1,72 @@
+# =========================
+# Laravel / PHP
+# =========================
+
+/vendor
+/node_modules
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Storage
+/storage/*.key
+/storage/app/*
+!/storage/app/public
+/storage/framework/*
+!/storage/framework/cache
+!/storage/framework/sessions
+!/storage/framework/views
+/storage/logs/*
+
+# Public
+/public/storage
+/public/hot
+
+# Cache & compiled
+/bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# PHPUnit
+.phpunit.result.cache
+
+# =========================
+# Node / Frontend
+# =========================
+
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+dist
+build
+
+# =========================
+# IDE / Editor
+# =========================
+
+.idea
+.vscode
+*.swp
+*.swo
+
+# =========================
+# OS
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# Docker / Homestead
+# =========================
+
+docker-compose.override.yml
+Homestead.json
+Homestead.yaml
+
+# =========================
+# Misc
+# =========================
+
+*.log
