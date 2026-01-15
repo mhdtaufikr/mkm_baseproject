@@ -1,0 +1,17 @@
+{
+    "name": "ITFAMS | Digital IT & Facility Asset Management System",
+    "short_name": "ITFams",
+   "start_url": "https://apps.ptmkm.co.id/mkm_itFam/public/",
+    "background_color": "rgba(0, 103, 127, 1)",
+    "description": "ITFAMS | Digital IT & Facility Asset Management System",
+    "display": "fullscreen",
+    "theme_color": "rgba(0, 103, 127, 1)",
+    "icons": [
+        {
+            "src": "mms.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
