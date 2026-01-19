@@ -8,7 +8,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <title>Task List</title>
+    <title>MKM Base Project</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="icon" href="{{ asset('assets/img/mms.png') }}">
     <style>
@@ -34,7 +34,7 @@
         .picture-section {
             flex: 6;
             /* Adjust the flex ratio as needed */
-            background-image: url("{{ asset('assets/img/backround.png') }}");
+            background-image: url("{{ asset('assets/img/background.png') }}");
             background-size: cover;
             /* Ensures the whole image is visible */
             background-repeat: no-repeat;
@@ -107,6 +107,19 @@
             gap: 0.5rem;
             /* Space between the icon and text */
         }
+
+        #loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+        }
     </style>
 </head>
 
@@ -117,13 +130,13 @@
 
         </div>
 
-        <!-- Right Section -->  
+        <!-- Right Section -->
         <div class="login-card">
             <div class="login-card-content">
                 <img src="{{ asset('assets/img/mms.png') }}" alt="DigiMAMS Logo"
                     style="height:60px; width:auto; margin-bottom: 20px;">
-                <h2>Task List</h2>
-                <small>Task List Application</small>
+                <h2>MKM Base Project</h2>
+                <small>MKM Base Project</small>
                 <!-- Alerts -->
                 @if (session('statusLogin'))
                     <div class="alert alert-warning" role="alert">
@@ -156,87 +169,139 @@
                 </form>
 
                 <!-- Separator Line -->
-                {{-- <div class="my-3 text-center">
+                <div class="my-3 text-center">
                     <span class="text-muted">OR</span>
                     <hr />
-                </div> --}}
+                </div>
 
                 <!-- Social Login Buttons -->
-                    {{-- <div class="text-center">
-                        <form action="{{ url('auth/microsoft') }}" method="GET">
-                            @csrf
-                            <button type="submit" class="btn btn-sm btn-primary w-100 mb-2"
-                                aria-label="Continue with Microsoft">
-                                <i class="fab fa-windows me-2"></i> Continue with <img
-                                    src="{{ asset('assets/img/mkm_logo.png') }}" alt="SSQH Logo"
-                                    style="height: auto; width: 45px;margin-bottom: 0px;"> Account
-                            </button>
+                {{-- <div class="text-center">
+                    <form action="{{ url('auth/microsoft') }}" method="GET">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-primary w-100 mb-2"
+                            aria-label="Continue with Microsoft">
+                            <i class="fab fa-windows me-2"></i> Continue with <img
+                                src="{{ asset('assets/img/mkm_logo.png') }}" alt="SSQH Logo"
+                                style="height: auto; width: 45px;margin-bottom: 0px;"> Account
+                        </button>
 
-                        </form>
-                    </div>
+                    </form>
+                </div> --}}
 
 
-                    <div class="mb-3 text-center">
-                        <button type="button" class="btn btn-sm btn-sm btn-info w-100 mb-2 text-white"
-                            data-bs-toggle="modal" data-bs-target="#requestAccessModal">Request Access</button>
-                    </div> --}}
-
-                <div class="modal fade" id="requestAccessModal" tabindex="-1" aria-labelledby="requestAccessModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="requestAccessModalLabel">Request Access</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="requestAccessForm" action="{{ url('request/access') }}" method="POST">
-                                    @csrf
-                                    <div class="mb-3">
-                                        <label for="inputName" class="form-label">Name</label>
-                                        <input type="text" class="form-control" id="inputName" name="name"
-                                            required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="inputEmail" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="inputEmail" name="email"
-                                            required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="inputDepartment" class="form-label">Department</label>
-                                        <input type="text" class="form-control" id="inputDepartment"
-                                            name="department" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="inputPlant" class="form-label">Plant</label>
-                                        <input type="text" class="form-control" id="inputPlant" name="plant"
-                                            required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="inputPurpose" class="form-label">Purpose</label>
-                                        <textarea class="form-control" id="inputPurpose" name="purpose" rows="3" required></textarea>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Submit Request</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mb-3 text-center">
+                    <button type="button" class="btn btn-sm btn-sm btn-info w-100 mb-2 text-white"
+                        data-bs-toggle="modal" data-bs-target="#requestAccessModal">Request Access</button>
                 </div>
 
                 <div class="footer mt-4 text-center">
-                    <p>&copy; 2023 PT Mitsubishi Krama Yudha Motors and Manufacturing</p>
+                    <p>&copy; 2026 PT Mitsubishi Krama Yudha Motors and Manufacturing</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- modal  --}}
+        <div class="modal fade" id="requestAccessModal" tabindex="-1" aria-labelledby="requestAccessModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="requestAccessModalLabel">Request Access</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="requestAccessForm" action="{{ route('request_access') }}" method="POST">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="inputName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="inputName" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="inputEmail" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputDepartment" class="form-label">Department</label>
+                                <input type="text" class="form-control" id="inputDepartment" name="department"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputPlant" class="form-label">Plant</label>
+                                <input type="text" class="form-control" id="inputPlant" name="plant" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputPurpose" class="form-label">Purpose</label>
+                                <textarea class="form-control" id="inputPurpose" name="purpose" rows="3" required></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary btn-sm" id="requestAccessSubmit">
+                                    Submit Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
 
 
     </div>
+
+    <!-- Loader Spinner -->
+    <div id="loader" style="display: none;" aria-live="polite" aria-busy="true">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
+    <script>
+        window.Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('requestAccessForm');
+            const loader = document.getElementById('loader');
+            const submitBtn = document.getElementById('requestAccessSubmit');
+
+            if (!form) return;
+
+            form.addEventListener('submit', function() {
+                if (loader) loader.style.display = 'flex';
+                if (submitBtn) submitBtn.disabled = true;
+            });
+        });
+    </script>
+
+    @if (session('success'))
+        <script>
+            Toast.fire({
+                icon: 'success',
+                title: @json(session('success'))
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Toast.fire({
+                icon: 'error',
+                title: @json(session('error'))
+            });
+        </script>
+    @endif
 </body>
 
 </html>

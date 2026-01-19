@@ -18,6 +18,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Resources -->
+    {{-- ================== amCharts (sementara tetap CDN) ================== --}}
     <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
@@ -26,25 +27,24 @@
     <script src="https://cdn.amcharts.com/lib/5/plugins/exporting.js"></script>
 
 
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.css">
+    {{-- ================== jQuery ================== --}}
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 
-    <!-- Include jQuery (only once) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- DataTables JS -->
+    {{-- ================== DataTables CSS ================== --}}
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+
+    {{-- ================== DataTables JS ================== --}}
     <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
 
-    <!-- DataTables Buttons JS -->
+
+    {{-- ================== DataTables Buttons ================== --}}
     <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
     <script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
     <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
@@ -67,19 +67,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js" crossorigin="anonymous">
     </script>
 
-    <!-- Include CKEditor -->
+
+    {{-- ================== CKEditor (CDN) ================== --}}
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
 
-    <!-- Include Chosen CSS and JS -->
-    <link href="{{ asset('chosen/chosen.min.css') }}" rel="stylesheet" />
+
+    {{-- ================== Chosen ================== --}}
+    <link rel="stylesheet" href="{{ asset('chosen/chosen.min.css') }}">
     <script src="{{ asset('chosen/chosen.jquery.min.js') }}"></script>
 
-    <!-- Include Chart.js and Chart.js-adapter-date-fns -->
-    <script src="{{ asset('plugins/chart.js/Chart.bundle.min.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Include SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{-- ================== Chart.js ================== --}}
+    <script src="{{ asset('plugins/chart.js/Chart.bundle.min.js') }}"></script>
+
+
+    {{-- ================== SweetAlert2 ================== --}}
+    <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
 
     <script>
         // Session Timeout Warning for CSRF Token Expiry
@@ -350,6 +354,22 @@
             return result.isConfirmed;
         }
 
+        async function handleDelete(event, ruleName) {
+            event.preventDefault();
+
+            const confirmed = await confirmAction({
+                title: 'Delete Rule?',
+                text: `Rule "${ruleName}" will be permanently deleted.`,
+                confirmText: 'Delete'
+            });
+
+            if (confirmed) {
+                event.target.submit();
+            }
+
+            return false;
+        }
+
         function formatDate(dateString) {
             const date = new Date(dateString);
 
@@ -358,83 +378,6 @@
                 month: 'short',
                 year: 'numeric'
             });
-        }
-
-        function applyStatusStyle(select, status) {
-            console.log(select)
-            console.log(status)
-            const styles = {
-                OPEN: {
-                    background: '#e7f1ff',
-                    color: '#0d6efd',
-                    border: '1.5px solid #b6d4fe'
-                },
-                DELAY: {
-                    background: '#f8d7da',
-                    color: '#842029',
-                    border: '1.5px solid #f5c2c7'
-                },
-                CLOSE: {
-                    background: '#d1e7dd',
-                    color: '#0f5132',
-                    border: '1.5px solid #badbcc'
-                },
-                OVERDUE: {
-                    background: '#f8d7da',
-                    color: '#842029',
-                    border: '1.5px solid #f5c2c7'
-                }
-            };
-
-            const style = styles[status] ?? {};
-
-            select.css({
-                'background-color': style.background,
-                'color': style.color,
-                'border': style.border,
-                // 'border-radius': '999px',
-                // 'font-weight': '600',
-                // 'font-size': '0.8rem',
-                // 'padding': '4px 10px',
-                // 'width': 'auto',
-                // 'display': 'inline-block'
-            });
-        }
-
-        function initStatusSelect(select) {
-            const value = select.data('value');
-
-            // set selected option
-            select.val(value);
-
-            // apply warna (kalau kamu pakai function sebelumnya)
-            applyStatusStyle(select, value);
-        }
-
-        function applyTaskStatusStyle(el, status) {
-            el.removeClass([
-                'task-status-open',
-                'task-status-delay',
-                'task-status-close',
-                'task-status-overdue',
-            ]);
-
-
-            switch (status) {
-                case 'OPEN':
-                    el.addClass('task-status-open');
-                    break;
-                case 'DELAY':
-                    el.addClass('task-status-delay');
-                    break;
-                case 'CLOSE':
-                    el.addClass('task-status-close');
-                    break;
-                case 'OVERDUE':
-                    el.addClass('task-status-overdue');
-                    break;
-
-            }
         }
 
         async function inputPrompt({

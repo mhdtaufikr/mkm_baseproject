@@ -22,7 +22,7 @@ Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::any('/auth/login', [AuthController::class, 'postLogin']);
 Route::get('auth/microsoft', [AuthController::class, 'handleAzureCallback'])->name('login.azzure');
 Route::get('/logout', [AuthController::class, 'logout']);
-Route::post('request/access', [AuthController::class, 'requestAccess']);
+Route::post('request/access', [AuthController::class, 'requestAccess'])->name('request_access');
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword'])->name('changePassword');
@@ -37,9 +37,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/dropdown/delete/{id}', [DropdownController::class, 'delete']);
 
     //Rules Controller
-    Route::get('/rule', [RulesController::class, 'index']);
+    Route::get('/rule', [RulesController::class, 'index'])->name('rules.index');
     Route::post('/rule/store', [RulesController::class, 'store']);
-    Route::patch('/rule/update/{id}', [RulesController::class, 'update']);
+    Route::patch('/rule/update/{id}', [RulesController::class, 'update'])->name('rules.update');
     Route::delete('/rule/delete/{id}', [RulesController::class, 'delete']);
 
     //User Controller

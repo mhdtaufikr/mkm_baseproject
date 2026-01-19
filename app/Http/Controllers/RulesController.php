@@ -5,13 +5,39 @@ namespace App\Http\Controllers;
 use App\Models\Rule;
 
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 
 class RulesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rules = Rule::get();
-        return view('rules.index', compact('rules'));
+        if ($request->ajax()) {
+            return DataTables::of(Rule::query())
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return '
+                    <button class="btn btn-primary btn-sm btn-edit"
+                        data-id="' . $row->id . '"
+                        data-name="' . $row->rule_name . '"
+                        data-value="' . $row->rule_value . '">
+                        <i class="fas fa-edit"></i>
+                    </button>
+
+                    <form action="' . url('/rule/delete/' . $row->id) . '"
+                          method="POST"
+                          class="d-inline delete-form">
+                        ' . csrf_field() . method_field('delete') . '
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                ';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('rules.index');
     }
 
 
@@ -27,9 +53,9 @@ class RulesController extends Controller
             'rule_value' => $request->rule_value,
         ]);
         if ($addrule) {
-            return redirect('/rule')->with('status', 'Success Add Rule');
+            return redirect()->back()->with('success', 'Success Add Rule');
         } else {
-            return redirect('/rule')->with('status', 'Failed Add Rule');
+            return redirect()->back()->with('error', 'Failed Add Rule');
         }
     }
 
@@ -38,9 +64,9 @@ class RulesController extends Controller
         $deleterule = Rule::where('id', $id)
             ->delete();
         if ($deleterule) {
-            return redirect('/rule')->with('status', 'Success Delete Rule');
+            return redirect()->back()->with('success', 'Success Delete Rule');
         } else {
-            return redirect('/rule')->with('status', 'Failed Delete Rule');
+            return redirect()->back()->with('error', 'Failed Delete Rule');
         }
     }
 
@@ -66,15 +92,15 @@ class RulesController extends Controller
                         'rule_value' => $request->rule_value,
                     ]);
                 if ($updaterule) {
-                    return redirect('/setting/kpi/standard')->with('status', 'Success Update Rule');
+                    return redirect()->back()->with('success', 'Success Update Rule');
                 } else {
-                    return redirect('/setting/kpi/standard')->with('failed', 'Failed Update Rule');
+                    return redirect()->back()->with('error', 'Failed Update Rule');
                 }
             } catch (\Throwable $th) {
-                return redirect('/setting/kpi/standard')->with('failed', 'Failed Update Dropdown');
+                return redirect()->back()->with('error', 'Failed Update Dropdown');
             }
         } else {
-            return redirect('/setting/kpi/standard')->with('failed', 'There is no Change in Allowance Data');
+            return redirect()->back()->with('error', 'There is no Change in Allowance Data');
         }
     }
 }

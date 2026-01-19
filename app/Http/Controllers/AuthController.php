@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AccessRequestMail;
+use App\Mail\RequestAccessMail;
+use App\Models\Rule;
+use Doctrine\Inflector\Rules\English\Rules;
 use Illuminate\Support\Facades\Hash; // Add this line
 use Laravel\Socialite\Facades\Socialite;
 
@@ -178,11 +181,24 @@ class AuthController extends Controller
             'purpose' => 'required|string|max:255',
         ]);
 
+        $data = $request->only([
+            'name',
+            'email',
+            'department',
+            'plant',
+            'purpose',
+        ]);
+
+        $emails = Rule::where('rule_name', 'EMAIL_REQUEST_ACCESS')
+            ->value('rule_value');
+
+        $recipients = array_map('trim', explode(',', $emails));
+
         // Send the email
-        Mail::to(['aditia@ptmkm.co.id', 'muhammad.taufik@ptmkm.co.id', 'bayu@ptmkm.co.id'])
-            ->send(new AccessRequestMail($request->all()));
+        Mail::to($recipients)
+            ->send(new RequestAccessMail($data));
 
         // Optionally, you can flash a success message or redirect to a specific page
-        return back()->with('statusLogin', 'Your request has been submitted.');
+        return redirect()->back()->with('success', 'Your request has been submitted.');
     }
 }
