@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DropdownController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RulesController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +18,35 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [AuthController::class, 'login'])->name('login');
+Route::any('/auth/login', [AuthController::class, 'postLogin']);
+Route::get('auth/microsoft', [AuthController::class, 'handleAzureCallback'])->name('login.azzure');
+Route::get('/logout', [AuthController::class, 'logout']);
+Route::post('request/access', [AuthController::class, 'requestAccess'])->name('request_access');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/change-password', [AuthController::class, 'changePassword'])->name('changePassword');
+    //Home Controller
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    /* Route::get('/wa', [HomeController::class, 'wa'])->name('wa'); */
+
+    //Dropdown Controller
+    Route::get('/dropdown', [DropdownController::class, 'index'])->name('dropdown.index');
+    Route::patch('/dropdown/update/{id}', [DropdownController::class, 'update'])->name('dropdown.update');
+    Route::delete('/dropdown/delete/{id}', [DropdownController::class, 'destroy'])->name('dropdown.delete');
+    Route::post('/dropdown/store', [DropdownController::class, 'store'])->name('dropdown.store');
+
+    //Rules Controller
+    Route::get('/rule', [RulesController::class, 'index'])->name('rules.index');
+    Route::post('/rule/store', [RulesController::class, 'store']);
+    Route::patch('/rule/update/{id}', [RulesController::class, 'update'])->name('rules.update');
+    Route::delete('/rule/delete/{id}', [RulesController::class, 'delete']);
+
+    //User Controller
+    Route::get('/user', [UserController::class, 'index'])->name('user.index');
+    Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
+    Route::post('/user/store-partner', [UserController::class, 'storePartner']);
+    Route::patch('/user/update/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::post('/user/revoke/{id}', [UserController::class, 'revoke'])->name('user.revoke');
+    Route::post('/user/activate/{id}', [UserController::class, 'activate'])->name('user.activate');
 });

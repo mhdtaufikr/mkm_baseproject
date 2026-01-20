@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>IT Tasklist</title>
+    <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet" />
+    <link rel="icon" href="{{ asset('assets/img/mms.png') }}">
+
+    <!-- PWA  -->
+    <meta name="theme-color" content="rgba(0, 103, 127, 1)" />
+    <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+    <link rel="manifest" href="{{ asset('/manifest.json') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Resources -->
+    {{-- ================== amCharts (sementara tetap CDN) ================== --}}
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/plugins/exporting.js"></script>
+
+
+    {{-- ================== jQuery ================== --}}
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+
+
+    {{-- ================== DataTables CSS ================== --}}
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+
+    {{-- ================== DataTables JS ================== --}}
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+
+
+    {{-- ================== DataTables Buttons ================== --}}
+    <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
+    <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet">
+
+    <!-- Include Select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <!-- Include FontAwesome and Feather Icons -->
+    <script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js" crossorigin="anonymous">
+    </script>
+
+
+    {{-- ================== CKEditor (CDN) ================== --}}
+    <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+
+
+    {{-- ================== Chosen ================== --}}
+    <link rel="stylesheet" href="{{ asset('chosen/chosen.min.css') }}">
+    <script src="{{ asset('chosen/chosen.jquery.min.js') }}"></script>
+
+
+    {{-- ================== Chart.js ================== --}}
+    <script src="{{ asset('plugins/chart.js/Chart.bundle.min.js') }}"></script>
+
+
+    {{-- ================== SweetAlert2 ================== --}}
+    <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
+
+    <script>
+        // Session Timeout Warning for CSRF Token Expiry
+        document.addEventListener('DOMContentLoaded', function() {
+            var timeoutWarning = 3300000; // 55 minutes, adjust based on your CSRF token lifespan
+            var timeoutAlert;
+
+            function resetActivityTimer() {
+                clearTimeout(timeoutAlert);
+                timeoutAlert = setTimeout(function() {
+                    Swal.fire({
+                        title: 'Session Timeout',
+                        text: 'Your session is about to expire due to inactivity. Please refresh the page to continue.',
+                        icon: 'warning',
+                        confirmButtonText: 'Refresh Page',
+                        allowOutsideClick: false, // Prevent clicking outside the modal to close it
+                        allowEscapeKey: false, // Prevent the escape key from closing the modal
+                        allowEnterKey: false, // Prevent the enter key from closing the modal
+                        showCancelButton: false // Hide the cancel button, ensuring only the refresh option is available
+                    }).then((result) => {
+                        if (result.value) {
+                            window.location.reload(); // Reloads the page to refresh CSRF token
+                        }
+                    });
+                }, timeoutWarning);
+            }
+
+            // Listen for any user activity
+            window.onload = resetActivityTimer;
+            document.onmousemove = resetActivityTimer;
+            document.onkeypress = resetActivityTimer;
+            document.onclick = resetActivityTimer;
+            document.onscroll = resetActivityTimer;
+        });
+    </script>
+
+</head>
+
+<body class="nav-fixed">
+    @include('layouts.includes._topbar')
+    <div id="layoutSidenav">
+        @include('layouts.includes._sidebar')
+        <div id="layoutSidenav_content">
+            @if (session('password'))
+                <script>
+                    window.onload = function() {
+                        alert("{{ session('password') }}");
+                    };
+                </script>
+            @endif
+            @yield('content')
+            <footer class="footer-admin footer-light">
+                <div class="container-xl px-4">
+                    <div class="row">
+                        <div class="col-md-6 small"></div>
+                        <div class="col-md-6 text-md-end small">
+                            Copyright PT Mitsubishi Krama Yudha Motors and Manufacturing&copy; 2023
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
+    <script src={{ asset('assets/js/scripts.js') }}></script>
+    {{-- <script src="{{ asset('/sw.js') }}"></script> --}}
+    <script>
+        // if ("serviceWorker" in navigator) {
+        //     // Register a service worker hosted at the root of the
+        //     // site using the default scope.
+        //     navigator.serviceWorker.register("/sw.js").then(
+        //         (registration) => {
+        //             console.log("Service worker registration succeeded:", registration);
+        //         },
+        //         (error) => {
+        //             console.error(`Service worker registration failed: ${error}`);
+        //         },
+        //     );
+        // } else {
+        //     console.error("Service workers are not supported.");
+        // }
+    </script>
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ route('changePassword') }}">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="oldPassword" class="form-label">Old Password</label>
+                            <input type="password" class="form-control" id="oldPassword" name="old_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword"
+                                name="new_password_confirmation" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Loader Spinner -->
+    <div id="loader" style="display: none;" aria-live="polite" aria-busy="true">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <style>
+        #loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .task-status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* OPEN */
+        .task-status-open {
+            background: #e7f1ff;
+            color: #0d6efd;
+            border: 1.5px solid #b6d4fe;
+        }
+
+        /* DELAY */
+        .task-status-delay {
+            background: #f8d7da;
+            color: #842029;
+            border: 1.5px solid #f5c2c7;
+        }
+
+        .task-status-overdue {
+            background: #f8d7da;
+            color: #842029;
+            border: 1.5px solid #f5c2c7;
+        }
+
+        /* CLOSE */
+        .task-status-close {
+            background: #d1e7dd;
+            color: #0f5132;
+            border: 1.5px solid #badbcc;
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Hide loader awal
+            $("#loader").hide();
+
+            // Show loader hanya untuk AJAX
+            // $(document).ajaxStart(function() {
+            //     $("#loader").fadeIn();
+            // });
+            // $(document).ajaxStop(function() {
+            //     $("#loader").fadeOut();
+            // });
+
+            // Variabel penanda: apakah saat ini kita klik tombol Export?
+            let isExporting = false;
+
+            // Ketika tombol Export Excel diklik, set isExporting = true
+            $(".export-excel").on("click", function() {
+                isExporting = true;
+
+                // Anda boleh tunjukkan spinner dulu (opsional), misal:
+                $("#loader").fadeIn();
+            });
+
+            // Sebelum navigasi page/unload, hanya show loader jika bukan export
+            window.addEventListener("beforeunload", function(event) {
+                if (!isExporting) {
+                    $("#loader").fadeIn();
+                }
+                // Jika isExporting == true, kita skip mem‐show spinner di sini.
+            });
+
+            // Ketika kembali (pageshow) atau tab regain focus, sembunyikan spinner
+            window.addEventListener("pageshow", function(event) {
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    $("#loader").fadeOut();
+                }
+            });
+
+            // Juga, ketika fokus kembali ke window sesudah download selesai, sembunyikan loader:
+            window.addEventListener("focus", function() {
+                $("#loader").fadeOut();
+                // reset flag
+                isExporting = false;
+            });
+        });
+    </script>
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        const Confirm = Swal.mixin({
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            focusCancel: true
+        });
+
+        async function confirmAction(options = {}) {
+            const result = await Confirm.fire({
+                title: options.title ?? 'Are you sure?',
+                text: options.text ?? '',
+            });
+
+            return result.isConfirmed;
+        }
+
+        async function handleDelete(event, ruleName) {
+            event.preventDefault();
+
+            const confirmed = await confirmAction({
+                title: 'Delete Rule?',
+                text: `Rule "${ruleName}" will be permanently deleted.`,
+                confirmText: 'Delete'
+            });
+
+            if (confirmed) {
+                event.target.submit();
+            }
+
+            return false;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+
+            return date.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        async function inputPrompt({
+            title = 'Input',
+            text = '',
+            input = 'text',
+            inputPlaceholder = '',
+            confirmButtonText = 'Submit',
+            cancelButtonText = 'Cancel'
+        } = {}) {
+
+            const {
+                value,
+                isConfirmed
+            } = await Swal.fire({
+                title: title,
+                text: text,
+                input: input,
+                inputPlaceholder: inputPlaceholder,
+                showCancelButton: true,
+                confirmButtonText: confirmButtonText,
+                cancelButtonText: cancelButtonText,
+                reverseButtons: true,
+                focusCancel: true,
+                inputValidator: (value) => {
+                    if (!value || !value.trim()) {
+                        return 'Remark is required';
+                    }
+                }
+            });
+
+            if (!isConfirmed) {
+                return null;
+            }
+
+            return value.trim();
+        }
+    </script>
+
+    @stack('scripts')
+
+    @if (session('success'))
+        <script>
+            Toast.fire({
+                icon: 'success',
+                title: @json(session('success'))
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Toast.fire({
+                icon: 'error',
+                title: @json(session('error'))
+            });
+        </script>
+    @endif
+
+    @if (session('warning'))
+        <script>
+            Toast.fire({
+                icon: 'warning',
+                title: @json(session('warning'))
+            });
+        </script>
+    @endif
+
+    @if (session('info'))
+        <script>
+            Toast.fire({
+                icon: 'info',
+                title: @json(session('info'))
+            });
+        </script>
+    @endif
+
+    @if ($errors->any())
+        <script>
+            Toast.fire({
+                icon: 'error',
+                title: 'Validation error',
+                text: {!! json_encode(implode("\n", $errors->all())) !!}
+            });
+        </script>
+    @endif
+
+
+</body>
+
+</html>
