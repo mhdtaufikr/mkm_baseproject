@@ -31,10 +31,10 @@ Route::middleware(['auth'])->group(function () {
     /* Route::get('/wa', [HomeController::class, 'wa'])->name('wa'); */
 
     //Dropdown Controller
-    Route::get('/dropdown', [DropdownController::class, 'index']);
-    Route::post('/dropdown/store', [DropdownController::class, 'store']);
-    Route::patch('/dropdown/update/{id}', [DropdownController::class, 'update']);
-    Route::delete('/dropdown/delete/{id}', [DropdownController::class, 'delete']);
+    Route::get('/dropdown', [DropdownController::class, 'index'])->name('dropdown.index');
+    Route::patch('/dropdown/update/{id}', [DropdownController::class, 'update'])->name('dropdown.update');
+    Route::delete('/dropdown/delete/{id}', [DropdownController::class, 'destroy'])->name('dropdown.delete');
+    Route::post('/dropdown/store', [DropdownController::class, 'store'])->name('dropdown.store');
 
     //Rules Controller
     Route::get('/rule', [RulesController::class, 'index'])->name('rules.index');
@@ -44,9 +44,9 @@ Route::middleware(['auth'])->group(function () {
 
     //User Controller
     Route::get('/user', [UserController::class, 'index'])->name('user.index');
-    Route::post('/user/store', [UserController::class, 'store']);
+    Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
     Route::post('/user/store-partner', [UserController::class, 'storePartner']);
-    Route::patch('/user/update/{user}', [UserController::class, 'update']);
-    Route::get('/user/revoke/{user}', [UserController::class, 'revoke']);
-    Route::get('/user/access/{user}', [UserController::class, 'access']);
+    Route::patch('/user/update/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::post('/user/revoke/{id}', [UserController::class, 'revoke'])->name('user.revoke');
+    Route::post('/user/activate/{id}', [UserController::class, 'activate'])->name('user.activate');
 });

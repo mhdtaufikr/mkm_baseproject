@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -41,144 +42,131 @@ class UserController extends Controller
                 ->addColumn('department', fn() => '-')
                 ->addColumn('job_title', fn() => '-')
 
-                ->addColumn('action', function ($u) {
-                    return '
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-update' . $u->id . '">
-                    <i class="fas fa-user-edit"></i>
-                </button>
-                ' . (
-                        $u->is_active
-                        ? '<button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-revoke' . $u->id . '">
-                                <i class="fas fa-user-lock"></i>
-                           </button>'
-                        : '<button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-access' . $u->id . '">
-                                <i class="fas fa-user-check"></i>
-                           </button>'
-                    );
+                ->addColumn('action', function ($user) {
+
+                    $avatar = $user->avatar;
+
+                    $editBtn = '
+                        <button class="btn btn-sm btn-primary btn-edit-user"
+                            data-id="' . $user->id . '"
+                            data-name="' . $user->name . '"
+                            data-username="' . $user->username . '"
+                            data-email="' . $user->email . '">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    ';
+
+                    if ($user->is_active) {
+                        $statusBtn = '
+                            <button class="btn btn-sm btn-danger btn-revoke-user"
+                                data-id="' . $user->id . '"
+                                data-email="' . e($user->email) . '">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        ';
+                    } else {
+                        $statusBtn = '
+                        <button class="btn btn-sm btn-success btn-activate-user"
+                            data-id="' . $user->id . '"
+                            data-email="' . e($user->email) . '">
+                            <i class="fas fa-user-check"></i>
+                        </button>
+                    ';
+                    }
+
+                    return $editBtn . $statusBtn;
                 })
 
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        // normal page load
-        $roles       = Dropdown::where('category', 'Role')->pluck('name_value');
-        $departments = Dropdown::where('category', 'Dept')->pluck('name_value');
-        $jobTitles   = Dropdown::where('category', 'Job Title')->pluck('name_value');
-        $dropdown    = Dropdown::where('category', 'Role')->get();
-        $dept        = Dropdown::where('category', 'Dept')->get();
-        $user        = User::get();
-
-        return view('users.index', compact(
-            'roles',
-            'departments',
-            'jobTitles',
-            'dropdown',
-            'dept',
-            'user'
-        ));
+        return view('users.index');
     }
 
 
 
     public function store(Request $request)
     {
-        // 1) Validate input
         $request->validate([
-            'name'       => 'required|string|max:255',
-            'username'   => 'required|string|max:255|unique:users,username',
-            'email'      => 'required|email|max:255|unique:users,email',
-            'role'       => 'nullable|string|max:255',
-            'job_title'  => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
-            'img'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'name'     => 'required|string|max:255',
+            'username' => 'required|string|max:45|unique:users,username',
+            'email'    => 'required|email|max:255|unique:users,email',
+            'phone'    => 'nullable|string|max:45|unique:users,phone',
+            'role'     => 'nullable|string|max:255',
+            'plant'    => 'nullable|string|max:45',
+            'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password' => 'required|string|max:16|min:8',
         ]);
 
-        // 2) Handle image upload first (outside DB tx so file is ready)
-        $imgPath = null;
-        if ($request->hasFile('img')) {
-            $file     = $request->file('img');
-            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $destPath = public_path('assets/img/users');
-            $file->move($destPath, $fileName);
-            $imgPath  = 'assets/img/users/' . $fileName;
-        }
-
-        // set up defaults
-        $defaultPassword = 'Password.1';
-        $loginUrl        = route('login');
+        DB::beginTransaction();
 
         try {
-            DB::beginTransaction();
+            $avatarPath = null;
 
-            // 3) Create user (dummy random password for now)
+            if ($request->hasFile('avatar')) {
+                $avatarPath = $request->file('avatar')
+                    ->store('avatars', 'public');
+            }
+
             $user = User::create([
-                'name'      => $request->input('name'),
-                'username'  => $request->input('username'),
-                'email'     => $request->input('email'),
-                'password'  => bcrypt(Str::random(16)),
-                'img'       => $imgPath,
-                'is_active' => 1,
-                'supervisor_id' => $request->input('supervisor'),
-                'role' => 'PERSON',
+                'name'       => $request->name,
+                'username'   => $request->username,
+                'email'      => $request->email,
+                'phone'      => $request->phone,
+                'avatar'     => $avatarPath,
+
+                'password'   => bcrypt($request->password),
+                'role'       => $request->role ?? 'PERSON',
+                'plant'      => $request->plant,
+
+                'status'     => 'ACTIVE',
+                'is_active'  => true,
+
+                'login_counter' => 0,
+                'password_changed_at' => null,
             ]);
 
-            // 4) Pivot in job_title & department
-            // $user->positions()->create([
-            //     'job_title'  => $request->input('job_title'),
-            //     'department' => $request->input('department'),
-            // ]);
-
-            // 5) Override to default password
-            $user->update([
-                'password' => bcrypt($defaultPassword),
-            ]);
-
-            // 6) Send the email (if this fails it'll throw)
-            // Mail::to($user->email)
-            //     ->cc([
-            //         'muhammad.taufik@ptmkm.co.id',
-            //         'Aditia@ptmkm.co.id',
-            //         'bayu@ptmkm.co.id',
-            //         'budi.prasetio@ptmkm.co.id',
-            //     ])
-            //     ->send(new UserCreated($user, $defaultPassword, $loginUrl));
+            /*
+        Mail::to($user->email)
+            ->send(new UserCreated($user, $defaultPassword, route('login')));
+        */
 
             DB::commit();
 
             return redirect()->back()
-                ->with('success', 'User created and notification email sent!');
-        } catch (\Exception $e) {
+                ->with('success', 'User created successfully');
+        } catch (\Throwable $e) {
             DB::rollBack();
 
-            // optionally delete the uploaded file if it exists
-            if ($imgPath && file_exists(public_path($imgPath))) {
-                @unlink(public_path($imgPath));
+            if ($avatarPath) {
+                Storage::disk('public')->delete($avatarPath);
             }
 
-            // re-throw or return with error
             return redirect()->back()
-                ->with('error', 'Failed to create user: ' . $e->getMessage());
+                ->with('error', 'Failed to create user');
         }
     }
 
 
     public function revoke($id)
     {
-        $revoke = User::where('id', $id)
-            ->update([
-                'is_active' => '0',
-            ]);
+        User::where('id', $id)->update([
+            'is_active' => false,
+            'status'    => 'SUSPENDED',
+        ]);
 
-        return redirect('/user')->with('status', 'Success Revoke User');
+        return response()->json(['ok' => true]);
     }
-    public function access($id)
+
+    public function activate($id)
     {
-        $access = User::where('id', $id)
-            ->update([
-                'is_active' => '1',
-            ]);
-        return redirect('/user')->with('status', 'Success Give User Access');
+        User::where('id', $id)->update([
+            'is_active' => true,
+            'status'    => 'ACTIVE',
+        ]);
+
+        return response()->json(['ok' => true]);
     }
 
 
@@ -207,9 +195,7 @@ class UserController extends Controller
         // Update user fields
         $user->name = $request->input('name');
         $user->username = $request->input('username');
-        $user->role = $request->input('role');
         $user->email = $request->input('email');
-        $user->supervisor_id = $request->input('supervisor');
         if ($request->filled('password')) {
             $user->password = bcrypt($request->input('password')); // Encrypt the password
         }

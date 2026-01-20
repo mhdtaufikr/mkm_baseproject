@@ -56,141 +56,6 @@
                                                     <i class="fas fa-plus-square"></i>
                                                 </button>
 
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="modal-add" tabindex="-1"
-                                                    aria-labelledby="modal-add-label" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="modal-add-label">Add User</h5>
-                                                                <button type="button" class="btn-close"
-                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <form action="{{ url('/user/store') }}" method="POST"
-                                                                enctype="multipart/form-data">
-                                                                @csrf
-                                                                <div class="modal-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <!-- Name Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="name">Full Name</label>
-                                                                                <input type="text" class="form-control"
-                                                                                    id="name" name="name"
-                                                                                    placeholder="Enter Full Name" required>
-                                                                            </div>
-
-                                                                            <!-- Username Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="username">Username</label>
-                                                                                <input type="text" class="form-control"
-                                                                                    id="username" name="username"
-                                                                                    placeholder="Enter Username" required>
-                                                                            </div>
-
-                                                                            {{-- <div class="form-group mb-2">
-                                                                                <label for="job_title">Job Title</label>
-                                                                                <select class="form-control form-control-sm"
-                                                                                    name="job_title" id="job_title"
-                                                                                    required>
-                                                                                    <option value="">-- Select Job
-                                                                                        Title --</option>
-                                                                                    <option value="Department Head">
-                                                                                        Department Head</option>
-                                                                                    <option value="Section Head">Section
-                                                                                        Head</option>
-                                                                                    <option value="Staff">Staff</option>
-                                                                                </select>
-                                                                            </div> --}}
-
-                                                                            <!-- Image Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="img">Image</label>
-                                                                                <input name="img" type="file"
-                                                                                    class="form-control" id="img"
-                                                                                    required>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <!-- Role Dropdown -->
-                                                                            {{-- <div class="form-group mb-2">
-                                                                                <label for="role">Role</label>
-                                                                                <select name="role" id="role"
-                                                                                    class="form-control">
-                                                                                    <option value="">- Please Select
-                                                                                        Role -</option>
-                                                                                    @foreach ($dropdown as $role)
-                                                                                        <option
-                                                                                            value="{{ $role->code_format }}">
-                                                                                            {{ $role->name_value }}</option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div> --}}
-
-                                                                            {{-- <div class="form-group mb-2">
-                                                                                <label for="department">Department</label>
-                                                                                <select class="form-control form-control-sm"
-                                                                                    name="department" id="department"
-                                                                                    required>
-                                                                                    <option value="">-- Select
-                                                                                        Department --</option>
-                                                                                    @foreach ($dept as $item)
-                                                                                        <option
-                                                                                            value="{{ $item->name_value }}">
-                                                                                            {{ $item->name_value }}</option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div> --}}
-
-
-                                                                            <!-- Email Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="email">Email</label>
-                                                                                <input type="email" class="form-control"
-                                                                                    id="email" name="email"
-                                                                                    placeholder="Enter Email Address"
-                                                                                    required>
-                                                                            </div>
-
-                                                                            <!-- Password Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="password">Password</label>
-                                                                                <input type="password" class="form-control"
-                                                                                    id="password" name="password"
-                                                                                    placeholder="Enter Password" required>
-                                                                            </div>
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="password">Supervisor</label>
-                                                                                <select id="topicSupervisor"
-                                                                                    name="supervisor" class="form-select">
-                                                                                    <option value="">-- Select
-                                                                                        Supervisor --</option>
-
-                                                                                    @foreach ($user as $us)
-                                                                                        <option value="{{ $us->id }}">
-                                                                                            {{ $us->name }}
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-dark"
-                                                                        data-bs-dismiss="modal">Close</button>
-                                                                    <button type="submit"
-                                                                        class="btn btn-primary">Submit</button>
-                                                                </div>
-                                                            </form>
-
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                @include('partials.alert')
                                             </div>
                                             <table id="tableUser" class="table-bordered table-striped table">
                                                 <thead>
@@ -205,188 +70,6 @@
                                                 </thead>
                                                 <tbody></tbody>
                                             </table>
-
-                                            @foreach ($user as $data)
-                                                {{-- Modal Update --}}
-                                                <div class="modal fade" id="modal-update{{ $data->id }}" tabindex="-1"
-                                                    aria-labelledby="modal-update{{ $data->id }}-label"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h4 class="modal-title"
-                                                                    id="modal-update{{ $data->id }}-label">Edit User
-                                                                </h4>
-                                                                <button type="button" class="btn-close"
-                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <form action="{{ url('/user/update/' . $data->id) }}"
-                                                                enctype="multipart/form-data" method="POST">
-                                                                @csrf
-                                                                @method('patch')
-                                                                <div class="modal-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <!-- Full Name Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="name">Full Name</label>
-                                                                                <input type="text" class="form-control"
-                                                                                    id="name" name="name"
-                                                                                    value="{{ $data->name }}" required>
-                                                                            </div>
-
-                                                                            <!-- Username Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="username">Username</label>
-                                                                                <input type="text" class="form-control"
-                                                                                    id="username" name="username"
-                                                                                    value="{{ $data->username }}" required>
-                                                                            </div>
-
-                                                                            <!-- Job Title Field -->
-                                                                            {{-- <div class="form-group mb-2">
-                                                                                <label for="job_title">Job Title</label>
-                                                                                <select
-                                                                                    class="form-control form-control-sm"
-                                                                                    name="job_title" id="job_title"
-                                                                                    required>
-                                                                                    <option value="">-- Select Job
-                                                                                        Title --</option>
-                                                                                    <option value="Department Head">
-                                                                                        Department Head</option>
-                                                                                    <option value="Section Head">Section
-                                                                                        Head</option>
-                                                                                    <option value="Staff">Staff</option>
-                                                                                </select>
-                                                                            </div> --}}
-
-                                                                            <!-- Image Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="img">Image</label>
-                                                                                <input type="file" class="form-control"
-                                                                                    id="img" name="img">
-                                                                                @if ($data->img)
-                                                                                    <small>Current Image: <a
-                                                                                            href="{{ asset($data->img) }}"
-                                                                                            target="_blank">View</a></small>
-                                                                                @endif
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <!-- Role Dropdown -->
-                                                                            {{-- <div class="form-group mb-2">
-                                                                                <label for="role">Role</label>
-                                                                                <select name="role" id="role"
-                                                                                    class="form-control">
-                                                                                    <option value="">- Please Select
-                                                                                        Role -</option>
-                                                                                    @foreach ($dropdown as $role)
-                                                                                        <option
-                                                                                            value="{{ $role->code_format }}"
-                                                                                            {{ $data->role == $role->name_value ? 'selected' : '' }}>
-                                                                                            {{ $role->name_value }}
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div> --}}
-
-                                                                            <!-- Department Field -->
-                                                                            {{-- <div class="form-group mb-2">
-                                                                                <label for="department">Department</label>
-                                                                                <select
-                                                                                    class="form-control form-control-sm"
-                                                                                    name="department" id="department"
-                                                                                    required>
-                                                                                    <option value="">-- Select
-                                                                                        Department --</option>
-                                                                                    @foreach ($dept as $item)
-                                                                                        <option
-                                                                                            value="{{ $item->name_value }}">
-                                                                                            {{ $item->name_value }}
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div> --}}
-
-                                                                            <!-- Email Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="email">Email</label>
-                                                                                <input type="email" class="form-control"
-                                                                                    id="email" name="email"
-                                                                                    value="{{ $data->email }}" required>
-                                                                            </div>
-
-                                                                            <!-- Password Field -->
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="password">New Password</label>
-                                                                                <input type="password"
-                                                                                    class="form-control" id="password"
-                                                                                    name="password"
-                                                                                    placeholder="Leave blank to keep current password">
-                                                                            </div>
-                                                                            <div class="form-group mb-2">
-                                                                                <label for="password">Supervisor</label>
-                                                                                <select id="topicSupervisor"
-                                                                                    name="supervisor" class="form-select">
-                                                                                    <option value="">-- Select
-                                                                                        Supervisor --</option>
-
-                                                                                    @foreach ($user as $us)
-                                                                                        <option
-                                                                                            value="{{ $us->id }}"
-                                                                                            {{ (string) old('supervisor', $data->supervisor_id ?? '') === (string) $us->id ? 'selected' : '' }}>
-                                                                                            {{ $us->name }}
-                                                                                        </option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-dark"
-                                                                        data-bs-dismiss="modal">Close</button>
-                                                                    <button type="submit"
-                                                                        class="btn btn-primary">Update</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {{-- Modal Update --}}
-
-                                                {{-- Modal Revoke --}}
-                                                <div class="modal fade" id="modal-revoke{{ $data->id }}">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h4 class="modal-title">Revoke User Access</h4>
-                                                                <button type="button" class="btn-close"
-                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <form action="{{ url('/user/revoke/' . $data->id) }}"
-                                                                enctype="multipart/form-data" method="GET">
-                                                                @csrf
-                                                                <div class="modal-body">
-                                                                    <div class="form-group mb-2">
-                                                                        Are you sure you want to revoke <label
-                                                                            for="email">{{ $data->email }}</label>?
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer justify-content-between">
-                                                                    <button type="button"
-                                                                        class="btn btn-dark btn-default"
-                                                                        data-bs-dismiss="modal">Close</button>
-                                                                    <input type="submit" class="btn btn-primary"
-                                                                        value="Submit">
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {{-- Modal Revoke --}}
-                                            @endforeach
                                         </div>
                                         <!-- /.card-body -->
                                     </div>
@@ -403,9 +86,132 @@
             <!-- /.content-wrapper -->
         </div>
 
+        {{-- Modal --}}
+        <div class="modal fade" id="modal-edit-user" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form id="editUserForm" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('patch')
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit User</h5>
+                            <button class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                {{-- LEFT --}}
+                                <div class="col-md-6">
+                                    <div class="form-group mb-2">
+                                        <label>Full Name</label>
+                                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                        <label>Username</label>
+                                        <input type="text" class="form-control" id="edit_username" name="username"
+                                            required>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                        <label>Avatar</label>
+                                        <input type="file" class="form-control" name="avatar"
+                                            accept="image/png,image/jpeg">
+                                        <small class="text-muted">JPG / PNG, max 2MB</small>
+                                    </div>
+                                </div>
+
+                                {{-- RIGHT --}}
+                                <div class="col-md-6">
+                                    <div class="form-group mb-2">
+                                        <label>Email</label>
+                                        <input type="email" class="form-control" id="edit_email" name="email" required>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                        <label>New Password</label>
+                                        <input type="password" class="form-control" name="password"
+                                            placeholder="Leave blank to keep current password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                            <button class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modal-add" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="row">
+                                {{-- LEFT --}}
+                                <div class="col-md-6">
+                                    <div class="form-group mb-2">
+                                        <label>Full Name</label>
+                                        <input type="text" class="form-control" name="name" required>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                        <label>Username</label>
+                                        <input type="text" class="form-control" name="username" required>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                        <label>Avatar</label>
+                                        <input type="file" class="form-control" name="avatar"
+                                            accept="image/png,image/jpeg">
+                                        <small class="text-muted">JPG / PNG, max 2MB</small>
+                                    </div>
+                                </div>
+
+                                {{-- RIGHT --}}
+                                <div class="col-md-6">
+                                    <div class="form-group mb-2">
+                                        <label>Email</label>
+                                        <input type="email" class="form-control" name="email" required>
+                                    </div>
+
+                                    <div class="form-group mb-2">
+                                        <label>Password</label>
+                                        <input type="password" class="form-control" name="password" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                            <button class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 
     </main>
     <script>
+        window.routes = {
+            userUpdate: "{{ route('user.update', ':id') }}",
+            userRevoke: "{{ route('user.revoke', ':id') }}",
+            userActivate: "{{ route('user.activate', ':id') }}",
+        }
+
         $(function() {
             $('#tableUser').DataTable({
                 processing: true,
@@ -451,6 +257,78 @@
                 theme: 'bootstrap-5',
                 dropdownParent: $('#modal-add')
             });
+        });
+
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-edit-user');
+            if (!btn) return;
+
+            document.getElementById('edit_name').value = btn.dataset.name;
+            document.getElementById('edit_username').value = btn.dataset.username;
+            document.getElementById('edit_email').value = btn.dataset.email;
+
+            document.getElementById('editUserForm').action =
+                window.routes.userUpdate.replace(':id', btn.dataset.id);
+
+            new bootstrap.Modal(
+                document.getElementById('modal-edit-user')
+            ).show();
+        });
+
+        document.addEventListener('click', async function(e) {
+            const btn = e.target.closest('.btn-revoke-user');
+            if (!btn) return;
+
+            e.preventDefault();
+
+            const confirmed = await confirmAction({
+                title: 'Revoke user access?',
+                text: `User ${btn.dataset.email} will not be able to login`
+            });
+
+            if (!confirmed) return;
+
+            await fetch(window.routes.userRevoke.replace(':id', btn.dataset.id), {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'User revoked'
+            });
+            $('#tableUser').DataTable().ajax.reload(null, false);
+        });
+
+        document.addEventListener('click', async function(e) {
+            const btn = e.target.closest('.btn-activate-user');
+            if (!btn) return;
+
+            e.preventDefault();
+
+            const confirmed = await confirmAction({
+                title: 'Activate user?',
+                text: `User ${btn.dataset.email} will be able to login`
+            });
+
+            if (!confirmed) return;
+
+            await fetch(window.routes.userActivate.replace(':id', btn.dataset.id), {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'User activated'
+            });
+            $('#tableUser').DataTable().ajax.reload(null, false);
         });
     </script>
 @endsection

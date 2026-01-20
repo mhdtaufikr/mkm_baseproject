@@ -20,107 +20,100 @@ class AuthController extends Controller
     // Handle Change Password Logic
     public function changePassword(Request $request)
     {
-        // Validate the request
         $request->validate([
             'old_password' => 'required',
             'new_password' => 'required|min:8|confirmed',
         ]);
 
-        // Check if the old password is correct
         if (!Hash::check($request->old_password, Auth::user()->password)) {
-            return back()->withErrors(['old_password' => 'Old password is incorrect']);
+            return redirect()->back()->with('error', 'Old password is incorrect');
         }
 
-        // Update the user's password
-        Auth::user()->update([
+        /** @var User $user */
+        $user = Auth::user();
+        $user->update([
             'password' => Hash::make($request->new_password),
         ]);
 
-        // Return a success message
-        return back()->with('password', 'Password changed successfully');
+        return redirect()->back()->with('success', 'Password changed successfully');
     }
     public function login()
     {
         return view('auth.login');
     }
 
-    public function handleAzureCallback(Request $request)
-    {
-        return Socialite::driver('azure')->redirect();
-    }
+    // public function handleAzureCallback(Request $request)
+    // {
+    //     return Socialite::driver('azure')->redirect();
+    // }
 
     public function postLogin(Request $request)
     {
         // Handle Azure OAuth callback
-        if ($request->has('code') && $request->has('state')) {
-            try {
-                // Retrieve the user details from Azure AD
-                $azureUser = Socialite::driver('azure')->stateless()->user();
+        // if ($request->has('code') && $request->has('state')) {
+        //     try {
+        //         // Retrieve the user details from Azure AD
+        //         $azureUser = Socialite::driver('azure')->stateless()->user();
 
-                // Find matching user in our database
-                $user = User::where('email', $azureUser->mail)->first();
+        //         // Find matching user in our database
+        //         $user = User::where('email', $azureUser->mail)->first();
 
-                if (! $user) {
-                    return redirect('/')
-                        ->with('statusLogin', 'User not found. Please contact the administrator.');
-                }
+        //         if (! $user) {
+        //             return redirect('/')
+        //                 ->with('statusLogin', 'User not found. Please contact the administrator.');
+        //         }
 
-                // Log the user in and remember them
-                Auth::login($user, true);
+        //         // Log the user in and remember them
+        //         Auth::login($user, true);
 
-                // Regenerate session ID to prevent fixation
-                $request->session()->regenerate();
+        //         // Regenerate session ID to prevent fixation
+        //         $request->session()->regenerate();
 
-                // Update last login timestamp and counter
-                $user->update([
-                    'last_login'    => now(),
-                    'login_counter' => $user->login_counter + 1,
-                ]);
+        //         // Update last login timestamp and counter
+        //         $user->update([
+        //             'last_login'    => now(),
+        //             'login_counter' => $user->login_counter + 1,
+        //         ]);
 
-                return redirect()->intended('/home');
-            } catch (\Exception $e) {
-                return redirect('/')
-                    ->with('statusLogin', 'Azure Login Failed: ' . $e->getMessage());
-            }
-        }
+        //         return redirect()->intended('/home');
+        //     } catch (\Exception $e) {
+        //         return redirect('/')
+        //             ->with('statusLogin', 'Azure Login Failed: ' . $e->getMessage());
+        //     }
+        // }
 
-        // Handle local email/username + password login
         $emailOrName = $request->input('email');
         $password    = $request->input('password');
         $isEmail     = filter_var($emailOrName, FILTER_VALIDATE_EMAIL);
 
-        // Build credentials array
         $credentials = $isEmail
             ? ['email' => $emailOrName, 'password' => $password]
             : ['username' => $emailOrName, 'password' => $password];
 
         // Attempt authentication (with "remember me")
         if (Auth::attempt($credentials, true)) {
-            // Regenerate session ID
             $request->session()->regenerate();
 
             /** @var \App\Models\User $user */
             $user = Auth::user();
 
-            // Check if the user is active
-            if ($user->is_active !== '1') {
+            if (!$user->is_active) {
                 Auth::logout();
                 return redirect('/')
-                    ->with('statusLogin', 'Give Access First to User');
+                    ->with('error', 'Give Access First to User');
             }
 
-            // Update last login timestamp and counter
             $user->update([
                 'last_login'    => now(),
                 'login_counter' => $user->login_counter + 1,
             ]);
 
-            return redirect()->intended('/home');
+            return redirect()->intended('/home')->with('success', 'success login');
         }
 
         // Authentication failed
         return redirect('/')
-            ->with('statusLogin', 'Wrong Email/Name or Password');
+            ->with('error', 'Wrong Email/Name or Password');
     }
 
 
@@ -167,7 +160,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect('/')->with('statusLogout', 'Success Logout');
+        return redirect('/')->with('success', 'Success Logout');
     }
 
     public function requestAccess(Request $request)

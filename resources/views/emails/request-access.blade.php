@@ -62,6 +62,16 @@
             font-size: 12px;
             color: #6b7280;
         }
+
+        .btn {
+            display: inline-block;
+            background: #0d6efd;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -104,6 +114,12 @@
                 <td>{{ $data['purpose'] }}</td>
             </tr>
         </table>
+
+        <p style="margin-top: 18px;">
+            <a class="btn" href="{{ route('login') }}" target="_blank">
+                Open {{ $appName }}
+            </a>
+        </p>
 
         <!-- FOOTER -->
         <div class="footer">

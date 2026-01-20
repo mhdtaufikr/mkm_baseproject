@@ -4,13 +4,40 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Dropdown;
+use Yajra\DataTables\DataTables;
 
 class DropdownController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $dropdown = Dropdown::get();
-        return view('dropdown.index', compact('dropdown'));
+        if ($request->ajax()) {
+            return DataTables::of(Dropdown::query())
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return '
+                    <button class="btn btn-primary btn-sm btn-edit"
+                        data-id="' . $row->id . '"
+                        data-category="' . $row->category . '"
+                        data-name="' . $row->name_value . '"
+                        data-code="' . $row->code_format . '">
+                        <i class="fas fa-edit"></i>
+                    </button>
+
+                    <form action="' . route('dropdown.delete', $row->id) . '"
+                          method="POST"
+                          class="d-inline delete-form">
+                        ' . csrf_field() . method_field('delete') . '
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                ';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('dropdown.index');
     }
 
     public function store(Request $request)
@@ -27,20 +54,20 @@ class DropdownController extends Controller
             'code_format' => $request->code_format,
         ]);
         if ($addDropdown) {
-            return redirect('/dropdown')->with('status', 'Success Add Dropdown');
+            return redirect()->back()->with('success', 'Success Add Dropdown');
         } else {
-            return redirect('/dropdown')->with('status', 'Failed Add Dropdown');
+            return redirect()->back()->with('error', 'Failed Add Dropdown');
         }
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $deleterule = Dropdown::where('id', $id)
             ->delete();
         if ($deleterule) {
-            return redirect('dropdown')->with('status', 'Success Delete Dropdown');
+            return redirect()->back()->with('success', 'Success Delete Dropdown');
         } else {
-            return redirect('dropdown')->with('status', 'Failed Delete Dropdown');
+            return redirect()->back()->with('error', 'Failed Delete Dropdown');
         }
     }
 
@@ -68,15 +95,15 @@ class DropdownController extends Controller
                         'code_format' => $request->code_format,
                     ]);
                 if ($updaterule) {
-                    return redirect('dropdown')->with('status', 'Success Update Dropdown');
+                    return redirect()->back()->with('success', 'Success Update Dropdown');
                 } else {
-                    return redirect('dropdown')->with('failed', 'Failed Update Dropdown');
+                    return redirect()->back()->with('error', 'Failed Update Dropdown');
                 }
             } catch (\Throwable $th) {
-                return redirect('dropdown')->with('failed', 'Failed Update Dropdown');
+                return redirect()->back()->with('error', 'Failed Update Dropdown');
             }
         } else {
-            return redirect('dropdown')->with('failed', 'There is no Change in Allowance Data');
+            return redirect()->back()->with('error', 'There is no Change in Allowance Data');
         }
     }
 }
