@@ -23,14 +23,14 @@
             <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage"
                 href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false"><img class="img-fluid"
-                    src="{{ asset('assets/img/illustrations/profiles/profile-1.png') }}" /></a>
+                    src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : asset('assets/img/illustrations/profiles/profile-1.png') }}" /></a>
             <div class="dropdown-menu dropdown-menu-end animated--fade-in-up border-0 shadow"
                 aria-labelledby="navbarDropdownUserImage">
                 <h6 class="dropdown-header d-flex align-items-center">
                     <img class="dropdown-user-img"
-                        src="{{ asset('assets/img/illustrations/profiles/profile-1.png') }}" />
+                        src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : asset('assets/img/illustrations/profiles/profile-1.png') }}" />
                     <div class="dropdown-user-details">
-                        <div class="dropdown-user-details-name">{{ auth()->user()->name }}</div>
+                        <div class="dropdown-user-details-name">{{ auth()->user()->name }} {{auth()->user()->avatar}}</div>
                         <div class="dropdown-user-details-email">{{ auth()->user()->email }}</div>
                     </div>
                 </h6>

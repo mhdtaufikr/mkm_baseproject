@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Dropdown;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
-use App\Mail\UserCreated;
+use App\Mail\UserCreatedMail;
+use App\Models\Rule;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 
@@ -109,6 +109,8 @@ class UserController extends Controller
                     ->store('avatars', 'public');
             }
 
+            $initialPassword = Str::random(12);
+
             $user = User::create([
                 'name'       => $request->name,
                 'username'   => $request->username,
@@ -116,7 +118,7 @@ class UserController extends Controller
                 'phone'      => $request->phone,
                 'avatar'     => $avatarPath,
 
-                'password'   => bcrypt($request->password),
+                'password'   => bcrypt($initialPassword),
                 'role'       => $request->role ?? 'PERSON',
                 'plant'      => $request->plant,
 
@@ -127,10 +129,7 @@ class UserController extends Controller
                 'password_changed_at' => null,
             ]);
 
-            /*
-        Mail::to($user->email)
-            ->send(new UserCreated($user, $defaultPassword, route('login')));
-        */
+            $this->sendEmailUserCreated($user, $initialPassword);
 
             DB::commit();
 
@@ -202,5 +201,16 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->back()->with('success', 'User updated successfully!');
+    }
+
+    private function sendEmailUserCreated($user, $hashPassword)
+    {
+        $emails = Rule::where('rule_name', 'EMAIL_REQUEST_ACCESS')
+            ->value('rule_value');
+
+        $recipients = array_map('trim', explode(',', $emails));
+
+        Mail::to($recipients)
+            ->send(new UserCreatedMail($user, $hashPassword));
     }
 }

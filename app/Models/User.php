@@ -29,6 +29,8 @@ class User extends Authenticatable
         'status',
         'is_active',
         'password_changed_at',
+        'last_login',
+        'login_counter',
     ];
 
     /**

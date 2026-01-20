@@ -6,12 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\AccessRequestMail;
 use App\Mail\RequestAccessMail;
 use App\Models\Rule;
-use Doctrine\Inflector\Rules\English\Rules;
-use Illuminate\Support\Facades\Hash; // Add this line
-use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Hash;
 
 
 
