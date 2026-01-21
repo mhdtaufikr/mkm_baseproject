@@ -100,6 +100,41 @@
             </div>
         </div>
 
+        <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="modal-add-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal-add-label">Add Dropdown
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url('/dropdown/store') }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="category" name="category"
+                                    placeholder="Enter Dropdown Category" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="name_value" name="name_value"
+                                    placeholder="Enter Dropdown Name Value" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="code_format" name="code_format"
+                                    placeholder="Enter Dropdown Code Format" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 
     </main>
     <script>
